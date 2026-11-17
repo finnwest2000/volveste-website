@@ -1,9 +1,8 @@
-
 export async function onRequestPost({ request, env }) {
   try {
     if (!env.DB) {
       return Response.json(
-        { ok: false, error: "Database not connected" },
+        { ok: false, error: "Database not connected." },
         { status: 503 }
       );
     }
@@ -11,26 +10,21 @@ export async function onRequestPost({ request, env }) {
     const data = await request.json();
     const { title, fullName, email, mobile, marketingConsent } = data;
 
-    if (
-      !title || !fullName || !email || !mobile ||
-      typeof marketingConsent !== "boolean"
-    ) {
-      return Response.json(
-        { ok: false, error: "Please complete all required fields." },
-        { status: 400 }
-      );
-    }
-
-    const allowedTitles = [
-      "Mr", "Ms", "Miss", "Mrs", "Prefer not to say"
-    ];
+    const allowedTitles = ["Mr", "Ms", "Miss", "Mrs", "Prefer not to say"];
 
     if (
+      typeof title !== "string" ||
       !allowedTitles.includes(title) ||
+      typeof fullName !== "string" ||
+      !fullName.trim() ||
       fullName.length > 120 ||
+      typeof email !== "string" ||
       email.length > 254 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+      typeof mobile !== "string" ||
+      !mobile.trim() ||
       mobile.length > 30 ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      typeof marketingConsent !== "boolean"
     ) {
       return Response.json(
         { ok: false, error: "Please check your details." },
@@ -38,21 +32,22 @@ export async function onRequestPost({ request, env }) {
       );
     }
 
-    await env.DB.prepare(`
-      INSERT INTO rsvps
-      (title, full_name, email, mobile, marketing_consent)
-      VALUES (?, ?, ?, ?, ?)
-    `).bind(
+    await env.DB.prepare(
+      `INSERT INTO shared_rsvps
+       (id, title, full_name, email, mobile, marketing_consent)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    ).bind(
+      crypto.randomUUID(),
       title,
-      fullName,
-      email,
-      mobile,
+      fullName.trim(),
+      email.trim(),
+      mobile.trim(),
       marketingConsent ? 1 : 0
     ).run();
 
     return Response.json({ ok: true });
   } catch (error) {
-    console.error("RSVP submission failed:", error);
+    console.error("RSVP error:", error);
     return Response.json(
       { ok: false, error: "Unable to save RSVP. Please try again." },
       { status: 500 }
