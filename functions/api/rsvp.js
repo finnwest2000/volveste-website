@@ -32,18 +32,33 @@ export async function onRequestPost({ request, env }) {
       );
     }
 
-    await env.DB.prepare(
-      `INSERT INTO shared_rsvps
-       (id, title, full_name, email, mobile, marketing_consent)
-       VALUES (?, ?, ?, ?, ?, ?)`
-    ).bind(
-      crypto.randomUUID(),
-      title,
-      fullName.trim(),
-      email.trim(),
-      mobile.trim(),
-      marketingConsent ? 1 : 0
-    ).run();
+    try {
+      await env.DB.prepare(
+        `INSERT INTO shared_rsvps
+         (id, title, full_name, email, mobile, marketing_consent)
+         VALUES (?, ?, ?, ?, ?, ?)`
+      ).bind(
+        crypto.randomUUID(),
+        title,
+        fullName.trim(),
+        email.trim(),
+        mobile.trim(),
+        marketingConsent ? 1 : 0
+      ).run();
+    } catch (error) {
+      if (
+        String(error.message).includes("UNIQUE constraint failed")
+      ) {
+        return Response.json(
+          {
+            ok: false,
+            error: "This email address has already been registered for this event."
+          },
+          { status: 409 }
+        );
+      }
+      throw error;
+    }
 
     return Response.json({ ok: true });
   } catch (error) {
@@ -54,3 +69,4 @@ export async function onRequestPost({ request, env }) {
     );
   }
 }
+  
