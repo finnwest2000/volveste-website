@@ -46,60 +46,12 @@ button:hover{background:#d4bd91}button:disabled{opacity:.6;cursor:wait}
 </header>
 <section style="text-align:center">
 <p class="eyebrow" style="font-size:clamp(11px,3.8vw,22px);letter-spacing:.04em;font-weight:700;color:var(--gold);margin:0 0 18px"><span style="display:block">The Artist Showcase</span><span style="display:block;white-space:nowrap">Volveste Launch x Vanish Christmas</span></p>
-<h1>RSVP</h1>
-<p class="intro">29th of December<br>2 Floor takeover at Saints of Ingram, Glasgow<br>Includes a drink on arrival and canapés.<br>Please RSVP by 23rd of November.</p>
+<h1>RSVP CLOSED</h1>
+<p class="intro">29th of December<br>2 Floor takeover at Saints of Ingram, Glasgow<br><br>Guest registration has now officially closed.<br>Thank you for your interest. We look forward to welcoming our confirmed guests.</p>
 </section>
 <div class="rule"></div>
-<form id="rsvp">
-<div class="field">
-<label for="title">Title <span aria-hidden="true">*</span></label>
-<select id="title" name="Title" required>
-<option value="">Select title</option><option>Mr</option><option>Ms</option><option>Miss</option><option>Mrs</option><option>Prefer not to say</option>
-</select></div>
-<div class="field"><label for="name">Full name *</label><input id="name" name="Full Name" autocomplete="name" placeholder="Enter your full name" required maxlength="120"></div>
-<div class="field"><label for="email">Email address *</label><input id="email" name="Email" type="email" autocomplete="email" placeholder="name@example.com" required maxlength="254"></div>
-<div class="field"><label for="mobile">Mobile number *</label><input id="mobile" name="Mobile Number" type="tel" autocomplete="tel" placeholder="+44 7..." required maxlength="30"></div>
-<div class="rule" style="margin:25px 0 20px"></div>
-<label class="consent"><input type="checkbox" id="marketing" name="Marketing Consent"><span>I agree to receive marketing communications from <strong>Volveste</strong> and the co-promoter. This is optional and can be withdrawn at any time.</span></label>
-<button id="submit" type="submit">Submit RSVP</button><p id="error" role="alert" aria-live="assertive"></p>
-<p class="smallprint">Your details will be used to manage this RSVP. Marketing consent is optional and is not required to submit your details.</p>
-</form>
-<div id="success" role="status" aria-live="polite"><strong>Thank you.</strong><br>Your RSVP has been received.</div>
-</main>
-<script>
-const form = document.getElementById('rsvp');
-const submit = document.getElementById('submit');
-const error = document.getElementById('error');
-form.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  if (!form.reportValidity()) return;
-  error.style.display = 'none';
-  submit.disabled = true;
-  submit.textContent = 'Submitting…';
-  const payload = {
-    title: document.getElementById('title').value,
-    fullName: document.getElementById('name').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    mobile: document.getElementById('mobile').value.trim(),
-    marketingConsent: document.getElementById('marketing').checked
-  };
-  try {
-    const response = await fetch('/api/rsvp', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
-    });
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok || !result.ok) throw new Error(result.error || 'Unable to submit your RSVP. Please try again.');
-    form.reset();
-    form.style.display = 'none';
-    document.getElementById('success').style.display = 'block';
-  } catch (err) {
-    error.textContent = err.message || 'Unable to submit your RSVP. Please try again.';
-    error.style.display = 'block';
-  } finally {
-    submit.disabled = false;
-    submit.textContent = 'Submit RSVP';
-  }
-});
-</script></body></html>
+<section aria-label="RSVP registration closed" style="background:var(--panel);border:1px solid var(--gold);border-radius:12px;padding:25px 22px;text-align:center">
+<p style="color:var(--gold);font-size:12px;letter-spacing:.14em;font-weight:600;margin:0 0 12px">REGISTRATION STATUS</p>
+<p style="color:var(--white);font-size:15px;line-height:1.7;margin:0">RSVP submissions are now closed.</p>
+</section>
+</main></body></html>
